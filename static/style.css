@@ -1,0 +1,442 @@
+:root {
+    /* Primary Colors */
+    --primary: #3a31d8;
+    --primary-hover: #2e26bc;
+    --primary-light: rgba(230, 126, 34, 0.1);
+    
+    /* Secondary Colors */
+    --secondary: #020024;
+    --secondary-hover: #03003b;
+    
+    /* Danger Colors */
+    --danger: #e74c3c;
+    --danger-hover: #c0392b;
+    
+    /* Background Colors */
+    --bg-dark: #3f3f3f;
+    --bg-light: #ffffff;
+    --bg-semi-transparent: rgba(255, 255, 255, 0.1);
+    
+    /* Text Colors */
+    --text-dark: #2c3e50;
+    --text-light: #eae9fc;
+    --text-muted: #555;
+    --text-muted-light: #dfdfdf;
+    
+    /* Border Colors */
+    --border-light: #ccc;
+    --border-dark: #1a1a1a;
+    
+    /* Shadow Colors */
+    --shadow-light: rgba(0, 0, 0, 0.1);
+    --shadow-dark: rgbaa(0, 0, 0, 0.2);
+}
+/* General Page Styling */
+body {
+    font-family: 'Poppins',sans-serif;
+    margin: 0 auto;
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--bg-dark);
+    height: 100%;
+}
+
+.auth_form {
+    display: block;
+    width: 100%;
+    padding: 2rem;
+    margin: 6rem 0;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+}
+.auth_form_title {
+    color: var(--text-light);
+}
+
+.auth_form_left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255,255,255,0.13);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.1);
+    box-shadow: 0 0 40px rgba(8,7,16,0.6);
+    padding: 40px 35px;
+
+}
+input{
+    display: block;
+    background-color: rgba(255,255,255,0.07);
+    border-radius: 3px;
+    padding: 0 10px;
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 300;
+}
+
+/* Dashboard Sidebar */
+.dashboard {
+    width: 280px;
+    background-color: var(--primary);
+    color: var(--text-light);
+    padding: 20px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Dashboard Header */
+.dashboard h2 {
+    text-align: center;
+    border-bottom: 2px solid #1abc9c;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+/* Dashboard Navigation */
+.dashboard ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.dashboard ul li {
+    width: 100%;
+    margin: 10px 0;
+    transition: background 0.3s ease-in-out;
+}
+
+/* Navigation Links */
+.dashboard ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.3s ease-in-out;
+}
+
+/* Hover Effect */
+.dashboard ul li:hover a {
+    background-color: var(--secondary);
+}
+
+/* Active Link */
+.dashboard ul li.active a {
+    background-color: var(--secondary-hover);
+}
+
+/* Logout Button */
+.logout-button {
+    margin-top: auto;
+    padding: 12px;
+    width: 100%;
+    text-align: center;
+    background-color: var(--danger);
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.3s ease-in-out;
+}
+
+.logout-button:hover {
+    background-color: var(--danger-hover);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard {
+        width: 220px;
+    }
+
+    .dashboard ul li a {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+/* Logout Button */
+.logout-button {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #e74c3c;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.logout-button:hover {
+    background-color: #c0392b;
+}
+
+/* Main Content Container */
+.container {
+    margin-left: 270px;
+    padding: 20px;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-dark);
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+}
+
+.encode_grid{
+    display: block;
+}
+.encode {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 1rem 4rem 1rem;
+}
+.encode_container {
+    max-width: 700px;
+    height: 100%;
+    margin: auto;
+    padding: 1rem 5rem 1rem;
+    background: var(--bg-semi-transparent);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.encode_container__title {
+    color: var(--text-light);
+}
+
+#encode__download{
+    margin: auto;
+    padding: 3rem;
+    height: 80%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    text-align: center;
+    color: var(--text-light);
+}
+
+#resultSection {
+    margin: auto;
+    padding: 1rem 5rem;
+}
+.waveform-section {
+    background: var(--bg-semi-transparent);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    margin: 20px 0;
+}
+
+.waveform-section h3 {
+    color: var(--text-light);
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.waveform-section img {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+/* Add this to your existing media query */
+@media (max-width: 768px) {
+    .waveform-section img {
+        max-width: 100%;
+    }
+}
+
+/* Added new styles for the comparison */
+.comparison-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+.legend {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+h2 {
+    color: #2c3e50;
+}
+
+p {
+    margin-bottom: 15px;
+    color: #555;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+label {
+    font-weight: bold;
+    text-align: left;
+}
+
+input[type="file"] {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #f9f9f9;
+}
+
+button {
+    padding: 10px;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: var(--primary-hover);
+}
+
+/* Login Page */
+.login-container {
+    background: white;
+    padding: 30px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-container input {
+    margin: 10px 0;
+    padding: 8px;
+    width: 90%;
+}
+
+.login-container button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.home-container {
+    text-align: center;
+    max-width: 800px;
+    margin: auto;
+    padding: 40px;
+    background: var(--bg-semi-transparent);
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: var(--text-light);
+}
+
+.features, .get-started {
+    text-align: left;
+    margin-top: 20px;
+}
+
+.features ul, .get-started ol {
+    list-style: none;
+    padding: 0;
+}
+
+.features ul li, .get-started ol li {
+    background: var(--bg-semi-transparent);
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+    color: var(--text-light);
+}
+
+.cta {
+    margin-top: 20px;
+}
+
+.btn {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: var(--primary);
+    color: var(--text-light);
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.btn:hover {
+    background-color: var(--primary-hover);
+}
+
+
+.decode-container {
+    max-width: 700px;
+    margin: auto;
+    padding: 3rem 4rem 4rem 4rem;
+    background: var(--bg-semi-transparent);
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h2 {
+    color: var(--text-light);
+}
+
+p {
+    margin-bottom: 15px;
+    color: var(--text-muted-light);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+label {
+    font-weight: bold;
+    text-align: left;
+    color: var(--text-light);
+}
+
+input[type="file"] {
+    padding: 5px;
+    border-radius: 5px;
+    background: var(--primary-light);
+    border: 1px solid var(--border-light);
+    color: var(--bg-light);
+}
+
+button {
+    padding: 10px;
+    background-color: var(--secondary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: var(--secondary-hover);
+}
+
+
+

@@ -1,0 +1,81 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<div class="pending-container">
+    <h2>Pending User Approvals</h2>
+    
+    {% if users %}
+    <table class="pending-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Registration Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.timestamp.strftime('%Y-%m-%d %H:%M') if user.timestamp else 'N/A' }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('approve_user', user_id=user.id) }}" class="btn-approve">Approve</a>
+                    <a href="{{ url_for('reject_user', user_id=user.id) }}" class="btn-reject">Reject</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No pending user registrations.</p>
+    {% endif %}
+</div>
+
+<style>
+    .pending-container {
+        background: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .pending-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .pending-table th, .pending-table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .pending-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+    }
+    
+    .actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn-approve {
+        padding: 6px 12px;
+        background: #2ecc71;
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+    
+    .btn-reject {
+        padding: 6px 12px;
+        background: #e74c3c;
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+</style>
+{% endblock %}

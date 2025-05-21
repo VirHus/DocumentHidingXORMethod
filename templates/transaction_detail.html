@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="transaction-detail">
+    <h1>Transaction Detail</h1>
+    <p><strong>User:</strong> {{ username }}</p>
+    <p><strong>Operation:</strong> {{ transaction.operation|capitalize }}</p>
+    <p><strong>Input File:</strong> {{ transaction.input_filename }}</p>
+    <p><strong>Output File:</strong> {{ transaction.output_filename }}</p>
+    <p><strong>Status:</strong> {{ transaction.status|capitalize }}</p>
+    <p><strong>File Type:</strong> {{ transaction.file_type }}</p>
+    <p><strong>File Size:</strong> {{ transaction.file_size }}</p>
+    <p><strong>Duration:</strong> {{ transaction.duration }} seconds</p>
+    <p><strong>Date/Time:</strong> {{ transaction.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+
+    {% if transaction.histogram_filename %}
+        <h2>Histogram Analysis</h2>
+        <img src="{{ url_for('static', filename=transaction.histogram_filename) }}" alt="Histogram" style="max-width: 600px; border: 1px solid #ccc; border-radius: 8px; margin-top: 20px;">
+    {% else %}
+        <p>No histogram available for this transaction.</p>
+    {% endif %}
+    
+    <br><br>
+    <a href="{{ url_for('history') }}" class="btn">Back to History</a>
+</div>
+
+<style>
+.transaction-detail {
+    max-width: 800rem;
+    margin: auto;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 10px;
+    color: white;
+}
+
+.transaction-detail p {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.transaction-detail h2 {
+    margin-top: 30px;
+    color: #3a31d8;
+}
+</style>
+{% endblock %}

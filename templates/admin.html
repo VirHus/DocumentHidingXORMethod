@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="admin-container">
+    <h2>User Management</h2>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Admin</th>
+                <th>Approved</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>
+                    {{ user.username }}
+                    {% if user.id == current_user.id %}
+                        <div class="current-user">Current User</div>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="badge {{ 'badge-admin' if user.is_admin else 'badge-user' }}">
+                        {{ 'Yes' if user.is_admin else 'No' }}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge {{ 'badge-approved' if user.is_approved else 'badge-pending' }}">
+                        {{ 'Yes' if user.is_approved else 'No' }}
+                    </span>
+                </td>
+                <td class="actions">
+                    {% if not user.is_admin %}
+                    <form method="post" action="{{ url_for('toggle_admin', user_id=user.id) }}">
+                        <button type="submit" class="btn-action btn-admin">Make Admin</button>
+                    </form>
+                    {%else%}
+                    {% if user.username != 'admin' %}
+                        <form method="post" action="{{ url_for('toggle_admin', user_id=user.id) }}">
+                            <button type="submit" class="btn-action btn-admin">
+                                {{ 'Revoke Admin' if user.is_admin else 'Make Admin' }}
+                            </button>
+                        </form>
+                    {% endif %}
+
+                    {% endif %}
+                    {% if not user.is_approved %}
+                    <form method="post" action="{{ url_for('approve_user', user_id=user.id) }}">
+                        <button type="submit" class="btn-action btn-approve">Approve</button>
+                    </form>
+                    {% endif %}
+                    {% if user.id != current_user.id %}
+                    <form method="post" action="{{ url_for('delete_user', user_id=user.id) }}">
+                        <button type="submit" class="btn-action btn-delete">Delete</button>
+                    </form>
+                    {% if user.is_approved %}
+                        <form method="post" action="{{ url_for('impersonate_user', user_id=user.id) }}">
+                            <button type="submit" class="btn-action btn-impersonate">Impersonate</button>
+                        </form>
+                    {% endif %}
+
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<style>
+    .admin-container {
+        background: rgba(255, 255, 255, 0.08);
+        margin: 0 auto;
+        width: 95%;
+        max-width: 1000px;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        color: #fff;
+    }
+
+    .admin-container h2 {
+        margin-bottom: 20px;
+        font-size: 26px;
+        color: #f0f0f0;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 14px 16px;
+        text-align: center;
+    }
+
+    .admin-table th {
+        background-color: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+        font-weight: bold;
+    }
+
+    .admin-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .badge-admin {
+        background: #3498db;
+        color: white;
+    }
+
+    .badge-user {
+        background: #95a5a6;
+        color: white;
+    }
+
+    .badge-approved {
+        background: #2ecc71;
+        color: white;
+    }
+
+    .badge-pending {
+        background: #e67e22;
+        color: white;
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 5px;
+        font-size: 13px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+        color: white;
+    }
+
+    .btn-admin {
+        background-color: #f39c12;
+    }
+
+    .btn-admin:hover {
+        background-color: #d68910;
+    }
+
+    .btn-delete {
+        background-color: #e74c3c;
+    }
+
+    .btn-delete:hover {
+        background-color: #c0392b;
+    }
+
+    .btn-impersonate {
+        background-color: #3a31d8;
+    }
+
+    .btn-impersonate:hover {
+        background-color: #2e26bc;
+    }
+
+    .btn-approve {
+        background-color: #2ecc71;
+    }
+
+    .btn-approve:hover {
+        background-color: #27ae60;
+    }
+
+    .current-user {
+        font-style: italic;
+        font-size: 12px;
+        color: #aaa;
+        margin-top: 4px;
+    }
+
+    @media (max-width: 768px) {
+        .admin-table th,
+        .admin-table td {
+            font-size: 13px;
+            padding: 10px;
+        }
+
+        .actions {
+            flex-direction: column;
+            gap: 6px;
+        }
+    }
+</style>
+
+{% endblock %}

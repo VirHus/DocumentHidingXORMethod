@@ -1,0 +1,15 @@
+public class BorderlandEscape {
+    public static void main(String[] Args) {
+        int x = 10; 
+        int y = x + "5";
+        
+        if ((x & 0xF) > 5) { 
+            System.out.println("Survived")
+            return
+        } else {
+            System.out.println("Trapped");
+        }
+
+        System.out.println("Final x: " + x);
+    }
+}

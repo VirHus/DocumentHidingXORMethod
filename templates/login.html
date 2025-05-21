@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block auth_content %}
+    <div class="auth_form">
+        <!-- Login Form -->
+        
+
+        <!-- Image Section 
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <img src="{{ url_for('static', filename='image.ng') }}" alt="" style="width: 80%; max-width: 400px;">
+        </div>-->
+
+        <div class="auth_form_left">
+            <h2 class="auth_form_title">Login</h2>
+            <form action="{{ url_for('login') }}" method="post" style="display: flex; flex-direction: column; width: 300px;">
+                <label for="username">Username:</label>
+                <input type="text" class="input_box" id="username" name="username" placeholder="username" required style="margin-bottom: 10px; padding: 8px;">
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="password" required style="margin-bottom: 10px; padding: 8px;">
+
+                <button type="submit" style="padding: 10px; background-color: #007BFF; color: white; border: none; cursor: pointer;">Login</button>
+            </form>
+            <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.</p>
+        
+        </div>
+    </div>
+{% endblock %}

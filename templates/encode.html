@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="encode_grid">
+    <div class="encode">
+        <div class="encode_container">
+            <h2 class="encode_container__title">Encode a Document in Audio</h2>
+            <p>Securely hide your confidential documents inside an audio file.</p>
+        
+            <form id="encodeForm" method="post" enctype="multipart/form-data">
+                <label for="audio">Select an Audio File:</label>
+                <input type="file" id="audio" name="audio" accept=".wav,.mp3" required>
+        
+                <label for="document">Select a Document:</label>
+                <input type="file" id="document" name="document" accept=".txt,.docx,.pdf,.pptx,.xlsx" required>
+        
+                <button type="submit" id="encodeButton">Encode Now</button>
+            </form>
+            
+            <!-- Floating loading section -->
+            <div id="loadingSection" class="floating-loading" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p>Encoding in progress...</p>
+            </div>
+        </div>
+        <div id="encode__download" style="display: none;">
+            <h3>Encoding Results</h3>
+            <div id="downloadSection">
+                <div class="audio-player-container">
+                    <audio id="encodedAudioPlayer" controls>
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                <a id="downloadLink" href="#" class="btn">Download Encoded Audio</a>
+                <p id="timeInfo"></p>
+                <p id="bitInfo"></p>
+
+            </div>
+        </div>
+    </div>
+    <div id="resultSection" style="display: none;">
+        <h3>Encoding Results</h3>
+        <div class="waveform-section">
+            <h3>Audio Amplitude Comparison</h3>
+            <div style="text-align: center;">
+                <img id="histogramImage" src="" alt="Amplitude Comparison" 
+                     style="max-width: 85%; border: 1px solid #ddd; padding: 10px;">
+            </div>
+            <div class="legend">
+                <span style="color: blue;">■ Original Audio</span>
+                <span style="color: green; margin-left: 20px;">■ Stego Audio</span>
+            </div>
+            <div style="margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.2); border-radius: 5px;">
+                <h4 style="color: white">Analysis:</h4>
+                <p>The histograms show the distribution of audio amplitudes before and after encoding.</p>
+                <p><strong>Expected Result:</strong> The two distributions should appear nearly identical, 
+                with only minimal differences in the least significant bits.</p>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.getElementById('encodeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show floating loading
+        const button = document.getElementById('encodeButton');
+        button.disabled = true;
+        document.getElementById('loadingSection').style.display = 'flex';
+        document.getElementById('resultSection').style.display = 'none';
+        document.getElementById('encode__download').style.display = 'none';
+        
+        const formData = new FormData(this);
+        
+        fetch('/encode', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => Promise.reject(err));
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            // Hide loading and show results
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'block';
+            document.getElementById('encode__download').style.display = 'block';
+            
+            // Set the download link
+            const downloadLink = document.getElementById('downloadLink');
+            downloadLink.href = `/download/encrypted/${data.encoded_audio}`;
+            downloadLink.textContent = `Download ${data.encoded_audio}`;
+            
+            // Set the audio player source
+            const audioPlayer = document.getElementById('encodedAudioPlayer');
+            audioPlayer.src = `/download/encrypted/${data.encoded_audio}?play=true`;
+
+            document.getElementById('timeInfo').textContent = 
+            `Encoding completed in ${data.time.toFixed(2)} seconds`;
+
+            document.getElementById('bitInfo').textContent = 
+            `Original Bit Size: ${data.original_bits.toLocaleString()} bits | Encrypted Bit Size (XOR): ${data.encrypted_bits.toLocaleString()} bits`;
+
+            // Set the histogram image
+            const histogramImg = document.getElementById('histogramImage');
+            histogramImg.src = `/static/${data.histogram_path}?${new Date().getTime()}`;
+        })
+        .catch(error => {
+                console.error('Error:', error);
+                alert(`Encoding failed: Audio file too small to hide document.`);
+            })
+            .finally(() => {
+                button.disabled = false;
+            });
+        });
+    </script>
+
+    <style>
+        .audio-player-container {
+            margin: 20px 0;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+    audio {
+        width: 100%;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+    
+    audio::-webkit-media-controls-panel {
+        background-color: #f5f5f5;
+    }
+    
+    audio::-webkit-media-controls-play-button,
+    audio::-webkit-media-controls-mute-button {
+        background-color: #3a31d8;
+        border-radius: 50%;
+    }
+    .floating-loading {
+        position: fixed;
+        top: 50%;
+        left: 60%;
+        transform: translate(-50%, -50%);
+        background: rgba(33, 33, 33, 0.8);
+        padding: 30px;
+        border-radius: 10px;
+        z-index: 1000;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .loading-spinner {
+        border: 5px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        border-top: 5px solid #3a31d8;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 15px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Add overlay when loading is active */
+    body.loading::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+    </style>
+{% endblock %}

@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="history-page">
+    <h1>Transaction History</h1>
+    <p>View and manage your past encoding/decoding activities.</p>
+    
+    <div class="search-section">
+        <div class="search-box">
+            <input type="text" placeholder="Search transactions...">
+            <button>Search</button>
+        </div>
+        
+        <div class="date-filter">
+            <input type="date" id="start-date">
+            <span>to</span>
+            <input type="date" id="end-date">
+            <button>Filter</button>
+        </div>
+    </div>
+    
+    <div class="transactions-container">
+        <table class="transactions-table">
+            <thead>
+                <tr>
+                    <th>Date/Time</th>
+                    <th>Operation</th>
+                    <th>File Type</th>
+                    <th>Size</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in transactions %}
+                <tr
+                data-datetime="{{ t.timestamp }}" 
+                data-search="{{ t.input_filename|lower }} {{ t.output_filename|lower }} {{ t.file_type|lower }}">
+                    <td>{{ t.timestamp }}</td>
+                    <td><span class="operation {{ t.operation }}">{{ t.operation|capitalize }}</span></td>
+                    <td>{{ t.file_type }}</td>
+                    <td>{{ t.file_size }}</td>
+                    <td>{{ t.duration }}s</td>
+                    <td><span class="status {{ t.status }}">{{ t.status|capitalize }}</span></td>
+                    <td>
+                        {% if t.output_filename %}
+                            <a href="{{ url_for('download_file', folder='encrypted' if t.operation == 'encode' else 'decrypted', filename=t.output_filename) }}" class="download-btn">
+                                Download
+                            </a>
+                        {% endif %}
+                        
+                            <a href="{{ url_for('view_transaction', transaction_id=t.id) }}" class="view-btn">
+                                View Result
+                            </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="pagination">
+        <button disabled>Previous</button>
+        <span class="active">1</span>
+        <span>2</span>
+        <span>3</span>
+        <button>Next</button>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const searchInput = document.querySelector(".search-box input");
+        const startDateInput = document.getElementById("start-date");
+        const endDateInput = document.getElementById("end-date");
+        const tableRows = document.querySelectorAll(".transactions-table tbody tr");
+    
+        function filterTransactions() {
+            const searchText = searchInput.value.toLowerCase();
+            const start = startDateInput.value ? new Date(startDateInput.value) : null;
+            const end = endDateInput.value ? new Date(endDateInput.value) : null;
+            if (end) end.setHours(23, 59, 59); // include full end day
+    
+            tableRows.forEach(row => {
+                const rowText = row.dataset.search;
+                const rowDate = new Date(row.dataset.datetime);
+    
+                const matchesSearch = rowText.includes(searchText);
+                const matchesStart = !start || rowDate >= start;
+                const matchesEnd = !end || rowDate <= end;
+    
+                row.style.display = (matchesSearch && matchesStart && matchesEnd) ? "" : "none";
+            });
+        }
+    
+        document.querySelector(".search-box button").addEventListener("click", filterTransactions);
+        document.querySelector(".date-filter button").addEventListener("click", filterTransactions);
+    
+        // Optional: Enable real-time search
+        searchInput.addEventListener("input", filterTransactions);
+    });
+    </script>
+    
+<style>
+    /* Main Container */
+    .history-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem 5rem 1rem;
+        font-family: Arial, sans-serif;
+        color: #333;
+        background-color:rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+    
+    .history-page h1 {
+        font-size: 28px;
+        margin-bottom: 10px;
+        color:rgb(255, 255, 255);
+    }
+    
+    .history-page p {
+        color: #7f8c8d;
+        margin-bottom: 30px;
+    }
+    
+    /* Search Section */
+    .search-section {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .search-box, .date-filter {
+        display: flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.6);
+        padding: 10px;
+        border-radius: 8px;
+    }
+    
+    .search-box input {
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 6px 0 0 6px;
+        width: 250px;
+        font-size: 14px;
+    }
+    
+    .search-box button, .date-filter button {
+        padding: 10px 20px;
+        background: #3498db;
+        color: white;
+        border: none;
+        border-radius: 0 6px 6px 0;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    
+    .date-filter {
+        gap: 10px;
+    }
+    
+    .date-filter input {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+    }
+    
+    .date-filter span {
+        color: #7f8c8d;
+    }
+    
+    .date-filter button {
+        background: #2ecc71;
+        border-radius: 6px;
+    }
+    
+    /* Transactions Table */
+    .transactions-container {
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        overflow: hidden;
+        margin-bottom: 30px;
+        padding:1rem;
+    }
+    
+    .transactions-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .transactions-table th {
+        background: #f8f9fa;
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #2c3e50;
+        border-bottom: 2px solid #eee;
+    }
+    
+    .transactions-table td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        color: #34495e;
+    }
+    
+    .transactions-table tr:hover {
+        background: #f8fafc;
+    }
+    
+    /* Status and Operation Badges */
+    .operation, .status {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .operation.encode {
+        background: #f39c12;
+        color: white;
+    }
+    
+    .operation.decode {
+        background: #27ae60;
+        color: white;
+    }
+    
+    .status.success {
+        background: #2ecc71;
+        color: white;
+    }
+    
+    .status.failed {
+        background: #e74c3c;
+        color: white;
+    }
+    
+    /* Download Button */
+    .download-btn {
+        display: inline-block;
+        padding: 6px 12px;
+        background: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 13px;
+        transition: background 0.3s;
+    }
+    
+    .download-btn:hover {
+        background: #2980b9;
+    }
+    
+    /* Pagination */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .pagination button, .pagination span {
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .pagination button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .pagination span.active {
+        background: #3498db;
+        color: white;
+        border-color: #3498db;
+    }
+    
+    .pagination button:hover:not(:disabled),
+    .pagination span:hover:not(.active) {
+        background: #f8f9fa;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .search-section {
+            flex-direction: column;
+        }
+        
+        .search-box, .date-filter {
+            width: 100%;
+        }
+        
+        .search-box input {
+            width: 100%;
+        }
+        
+        .transactions-table {
+            display: block;
+            overflow-x: auto;
+        }
+    }
+
+    
+        
+</style>
+{% endblock %}

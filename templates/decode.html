@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="decode-container">
+    <h2>Decode a Document from Audio</h2>
+    <p>Extract hidden confidential documents from an encoded audio file.</p>
+
+    <form id="decodeForm" method="POST" enctype="multipart/form-data">
+        <label for="encoded_audio">Select an Encoded Audio File:</label>
+        <input type="file" id="encoded_audio" name="encoded_audio" accept=".wav" required>
+
+        <button type="submit" id="decodeButton">Decode Now</button>
+    </form>
+
+    <div id="loadingSection" class="floating-loading" style="display: none; margin-top: 20px;">
+        <div class="loading-spinner"></div>
+        <p>Decoding in progress... Please wait.</p>
+    </div>
+
+    <div id="resultSection" style="display: none; margin-top: 20px;">
+        <h3>Decoding Results</h3>
+        <div class="histogram-section">
+            <img id="histogramImage" src="" alt="Amplitude Distribution" style="max-width: 100%;">
+            <p id="timeInfo"></p>
+
+        </div>
+        <div id="downloadSection" style="margin-top: 20px;">
+            <a id="downloadLink" href="#" class="btn">Download Extracted Document</a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('decodeForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Show loading state
+    const button = document.getElementById('decodeButton');
+    button.disabled = true;
+    document.getElementById('loadingSection').style.display = 'flex';
+    document.getElementById('resultSection').style.display = 'none';
+    
+    const formData = new FormData(this);
+    
+    fetch('/decode', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+        
+        // Show results
+        document.getElementById('loadingSection').style.display = 'none';
+        document.getElementById('resultSection').style.display = 'block';
+        
+        // Set histogram image
+        document.getElementById('histogramImage').src = `/static/${data.histogram}?${Date.now()}`;
+        
+        // Set time information
+        document.getElementById('timeInfo').textContent = 
+            `Decoding completed in ${data.time.toFixed(2)} seconds`;
+        
+        // Set download link
+        const downloadLink = document.getElementById('downloadLink');
+        downloadLink.href = `/download/decrypted/${data.document}`;
+        downloadLink.textContent = `Download ${data.document}`;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Decoding failed: ' + error.message);
+    })
+    .finally(() => {
+        button.disabled = false;
+    });
+});
+</script>
+
+<style>
+    .floating-loading {
+        position: fixed;
+        top: 50%;
+        left: 60%;
+        transform: translate(-50%, -50%);
+        background: rgba(33, 33, 33, 0.8);
+        padding: 30px;
+        border-radius: 10px;
+        z-index: 1000;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .loading-spinner {
+        border: 5px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        border-top: 5px solid #3a31d8;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 15px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Add overlay when loading is active */
+    body.loading::after {
+        content: '';
+        position: fixed;
+        display:flex;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+    </style>
+{% endblock %}
